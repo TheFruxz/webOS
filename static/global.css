@@ -1,0 +1,9 @@
+:root {
+    --theme-bg: white; /* Theme should adapt and switch between light and dark mdoe*/
+}
+
+body {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
