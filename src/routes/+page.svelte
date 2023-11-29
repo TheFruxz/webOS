@@ -1,11 +1,21 @@
 <script>
+    import { onMount } from "svelte";
     import Window from "./Window.svelte";
+    import { cursor } from "../store";
 
     let openWindows = [];
     let hiddenWindows = [];
 
     openWindows.push("test");
     openWindows.push("test");
+
+    function cursorMove(e) {
+        cursor.set({ x: e.clientX, y: e.clientY })
+    }
+
+    onMount(() => {
+        document.addEventListener('mousemove', cursorMove)
+    })
 
 </script>
 <h1>Welcome to SvelteKit</h1>
