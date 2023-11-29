@@ -1,11 +1,15 @@
 <script>
+    import { windows } from "../store";
     import { onMount } from "svelte";
 
+    export let closeWindow;
     export let width = 500;
     export let height = 300;
     export let x = 0;
     export let y = 0;
 
+    let windowLevel;
+    $: windowIndex = windowLevel;
     /**
      * @type {HTMLDivElement}
      */
@@ -25,7 +29,7 @@
 
     onMount(() => {
         buttonClose.addEventListener("click", () => {
-            close();
+            closeWindow();
         });
     });
 
@@ -33,10 +37,38 @@
         windowObject.parentNode.removeChild(windowObject)
     }
 
+    let isMoving = false;
+    let moveLocation = { x: 0, y: 0 };
+
+    function drag(e) {
+        isMoving = true
+        // moveLocation = the relative position of the mouse to the window
+        moveLocation = { x: x - e.clientX, y: y - e.clientY }
+        windows.update((n) => {
+            let x = n + 1;
+            windowLevel = x;
+            return x;
+        });
+    }
+
+    function drop(e) {
+        isMoving = false
+    }
+
+    function move(e) {
+        if(!isMoving) return
+
+        x = e.clientX
+        y = e.clientY
+        
+        x += moveLocation.x
+        y += moveLocation.y
+    }
+
 </script>
 
-<div class="window" style="height: {height}px; width: {width}px" bind:this={windowObject}>
-    <div class="window-header">
+<div class="window" style="height: {height}px; width: {width}px; top: {y}px; left: {x}px; z-index: {windowIndex}" bind:this={windowObject}>
+    <div class="window-header" on:mousedown={drag} on:mousemove={move} on:mouseup={drop}>
         <div class="control-group">
             <div class="control control-close" bind:this={buttonClose}/>
             <div class="control control-minimize" bind:this={buttonMinimize}/>
@@ -53,7 +85,7 @@
     .window {
         position: absolute;
         background-color: rgba(255, 255, 255, .1);
-        backdrop-filter: blur(25px);
+        backdrop-filter: blur(15px);
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, .25);
         overflow: hidden;
@@ -66,6 +98,7 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        user-select: none;
     }
 
     .window-header .control-group {
