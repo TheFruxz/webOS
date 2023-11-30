@@ -5,11 +5,22 @@
     import { cursor } from "../store";
     import { onMount } from "svelte";
 
-    export let closeWindow;
-    export let width = 500;
-    export let height = 300;
-    export let x = 0;
-    export let y = 0;
+    export let windowDetails = {
+        id: 0,
+        content: "404",
+        width: 500,
+        height: 300,
+        x: 0,
+        y: 0,
+        title: "Unknown",
+        icon: "https://llllllll.co/uploads/default/original/3X/c/8/c8e62a92b66c348e0cf6fcce04ff9b03f6b37bb8.png"
+    };
+    export let closeFunction;
+
+    $: width = windowDetails.width;
+    $: height = windowDetails.height;
+    $: x = windowDetails.x;
+    $: y = windowDetails.y;
 
     let windowLevel;
     $: windowIndex = windowLevel;
@@ -36,12 +47,15 @@
 
     cursor.subscribe((position) => {
         if(!isMoving) return
+        let localX = position.x
+        let localY = position.y
 
-        x = position.x
-        y = position.y
+        localX += moveLocation.x
+        localY += moveLocation.y
 
-        x += moveLocation.x
-        y += moveLocation.y
+        windowDetails.x = localX
+        windowDetails.y = localY
+
     })
 
     function drag(e) {
@@ -54,12 +68,16 @@
         isMoving = false;
     }
 
+    onMount(() => {
+        buttonClose.addEventListener('click', closeFunction(windowDetails.id))
+    })
+
 </script>
 
 <div class="window" style="height: {height}px; width: {width}px; top: {y}px; left: {x}px; z-index: {windowIndex}" bind:this={windowObject}>
     <div class="window-header" on:mousedown={drag} on:mouseup={drop}>
         <div class="control-group">
-            <div class="control control-close" bind:this={buttonClose} on:click={closeWindow}/>
+            <div class="control control-close" bind:this={buttonClose}/>
             <div class="control control-minimize" bind:this={buttonMinimize}/>
             <div class="control control-maximize" bind:this={buttonMaximize}/>
         </div>
