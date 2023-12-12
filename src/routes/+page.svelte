@@ -4,7 +4,7 @@
     import { cursor } from "../store";
 
     let openWindows = [];
-    let hiddenWindows = [];
+    let hiddenWindowIDs = [];
 
     openWindows.push({
         id: 0,
@@ -37,14 +37,63 @@
 
 <div class="desktop">
     {#each openWindows as windowObject}
-        <Window windowDetails={windowObject} closeFunction={closeWindow}>
-            {windowObject.content}
-        </Window>
+        {#if !hiddenWindowIDs.some((id) => id === windowObject.id)}
+            <Window windowDetails={windowObject} closeFunction={closeWindow}>
+                {windowObject.content}
+            </Window>
+        {/if}
     {/each}
+
+
+    <div class="taskbar">
+        {#each openWindows as openWindow }
+            <div class="taskbar-item">
+                <img class="taskbar-icon" src="{openWindow.icon}" width="150px" height="150px">
+            </div>
+            <div class="taskbar-item">
+                <img class="taskbar-icon" src="{openWindow.icon}" width="150px" height="150px">
+            </div>
+            <div class="taskbar-item">
+                <img class="taskbar-icon" src="{openWindow.icon}" width="150px" height="150px">
+            </div>
+        {/each}
+    </div>
 </div>
 
 <style>
+
     .desktop {
         user-select: none;
     }
+
+    .taskbar {
+        position: fixed;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        bottom: 0;
+        height: var(--nav-height);
+        overflow: hidden;
+        background-color: rgba(0, 0, 0, .2);
+        border: solid 1px rgba(0, 0, 0, .4);
+        backdrop-filter: blur(15px);
+        min-width: 4rem;
+        margin: 1rem;
+        border-radius: 15px;
+        gap: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .taskbar .taskbar-icon {
+        height: var(--nav-item-height);
+        width: var(--nav-item-height);
+        border-radius: 15px;
+    }
+
+    .taskbar .taskbar-item {
+        height: var(--nav-item-height);
+    }
+
 </style>

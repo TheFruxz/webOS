@@ -1,5 +1,7 @@
 :root {
     --theme-bg: white; /* Theme should adapt and switch between light and dark mdoe*/
+    --nav-height: 5rem;
+    --nav-item-height: calc(var(var(--nav-height)) * .8)
 }
 
 body {
