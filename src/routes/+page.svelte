@@ -11,7 +11,7 @@
         manager.open(
             new Window(
                 WindowContent.blank(),
-                "Hello World",
+                "Hello World " + i,
                 "https://llllllll.co/uploads/default/original/3X/c/8/c8e62a92b66c348e0cf6fcce04ff9b03f6b37bb8.png",
             )
         )
