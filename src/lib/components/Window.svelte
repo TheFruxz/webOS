@@ -66,7 +66,7 @@
         })
 
         order.subscribe(() => {
-            // delayed update
+            // delayed update for bugging reasons
             setTimeout(() => {
                 console.log("window uuid: " + window.uuid + " level " + windowLevel)
                 windowLevel = Constants.MAX_WINDOW_AMOUNT -  WindowManager.getWindowIndex(window.uuid)
@@ -109,10 +109,17 @@
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, .25);
         overflow: hidden;
+        transition: background-color .1s ease-in-out, box-shadow .1s ease-in-out, transform .1s ease-in-out, backdop-filter .1s ease-in-out, border .1s ease-in-out;
+        border: solid 1px rgba(0, 0, 0, .1);
 
         &:active {
             @extend .active;
             z-index: 101;
+            background-color: rgba(255, 255, 255, .2);
+            box-shadow: 0 0 25px rgba(0, 0, 0, .15);
+            transform: scale(1.02);
+            backdrop-filter: blur(25px);
+            border: solid 1px rgba(0, 0, 0, .2);
         }
 
         .window-header {
