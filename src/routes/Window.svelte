@@ -1,44 +1,22 @@
-<script>
-// @ts-nocheck
-
-    import { windows } from "../store";
+<script lang="ts">
+    import WindowManager from "$lib/manager/WindowManager";
+    import type Window from "$lib/util/Window";
     import { cursor } from "../store";
     import { onMount } from "svelte";
 
-    export let windowDetails = {
-        id: 0,
-        content: "404",
-        width: 500,
-        height: 300,
-        x: 0,
-        y: 0,
-        title: "Unknown",
-        icon: "https://llllllll.co/uploads/default/original/3X/c/8/c8e62a92b66c348e0cf6fcce04ff9b03f6b37bb8.png"
-    };
-    export let closeFunction;
+    export let window: Window;
 
-    $: width = windowDetails.width;
-    $: height = windowDetails.height;
-    $: x = windowDetails.x;
-    $: y = windowDetails.y;
+    $: width = window.size.x;
+    $: height = window.size.y;
+    $: x = window.position.x;
+    $: y = window.position.y;
 
-    let windowLevel;
+    let windowLevel: number;
     $: windowIndex = windowLevel;
-    /**
-     * @type {HTMLDivElement}
-     */
+
     let windowObject;
-    /**
-     * @type {HTMLDivElement}
-     */
-    let buttonClose;
-    /**
-     * @type {HTMLDivElement}
-     */
+    let buttonClose: HTMLDivElement;
     let buttonMaximize;
-    /**
-     * @type {HTMLDivElement}
-     */
     let buttonMinimize;
     
     let isMoving = false;
@@ -53,8 +31,8 @@
         localX += moveLocation.x
         localY += moveLocation.y
 
-        windowDetails.x = localX
-        windowDetails.y = localY
+        window.position.x = localX
+        window.position.y = localY
 
     })
 
@@ -69,7 +47,7 @@
     }
 
     onMount(() => {
-        buttonClose.addEventListener('click', closeFunction(windowDetails.id))
+        buttonClose.addEventListener('click', () => { WindowManager.close(window) })
     })
 
 </script>
@@ -77,7 +55,7 @@
 <div class="window" style="height: {height}px; width: {width}px; top: {y}px; left: {x}px; z-index: {windowIndex}" bind:this={windowObject}>
     <div class="window-header" on:mousedown={drag} on:mouseup={drop}>
         <div class="control-group">
-            <div class="control control-close" bind:this={buttonClose}/>
+            <div class="control control-close" bind:this={buttonClose} on:click={() => x=x}/>
             <div class="control control-minimize" bind:this={buttonMinimize}/>
             <div class="control control-maximize" bind:this={buttonMaximize}/>
         </div>
@@ -102,6 +80,7 @@
         width: 100%;
         height: 3rem;
         border-bottom: solid 1px rgba(0, 0, 0, .1);
+        background-color: rgba(255, 255, 255, .5);
         display: flex;
         flex-direction: row;
         align-items: center;

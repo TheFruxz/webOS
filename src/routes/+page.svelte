@@ -1,60 +1,49 @@
-<script>
+<script lang="ts">
     import { onMount } from "svelte";
-    import Window from "./Window.svelte";
+    import WindowElement from "./Window.svelte";
+    import Window from "$lib/util/Window";
     import { cursor } from "../store";
+    import { WindowContent } from "$lib/util/WindowContent";
+    import manager, { windows } from "$lib/manager/WindowManager";
 
-    let openWindows = [];
-    let hiddenWindowIDs = [];
-
-    openWindows.push({
-        id: 0,
-        content: "Hello World",
-        width: 500,
-        height: 300,
-        x: 0,
-        y: 0,
-        title: "Hello World",
-        icon: "https://llllllll.co/uploads/default/original/3X/c/8/c8e62a92b66c348e0cf6fcce04ff9b03f6b37bb8.png"
-    });
-
-    function cursorMove(e) {
-        cursor.set({ x: e.clientX, y: e.clientY })
-    }
-
-    function closeWindow(id) {
-        return () => {
-            openWindows = openWindows.filter((window) => window.id !== id)
-        }
-    }
+    manager.open(
+        new Window(
+            WindowContent.blank(),
+            "Hello World",
+            "https://llllllll.co/uploads/default/original/3X/c/8/c8e62a92b66c348e0cf6fcce04ff9b03f6b37bb8.png",
+        )
+    )
 
     onMount(() => {
-        document.addEventListener('mousemove', cursorMove)
+        document.addEventListener('mousemove', (e) => {
+            cursor.set({ x: e.clientX, y: e.clientY })
+        })
     })
+
+    let renderingCandidates: Window[] = [];
+    windows.subscribe((value) => {
+        renderingCandidates = value;
+    })
+    $: renderingWindows = renderingCandidates;
 
 </script>
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
 <div class="desktop">
-    {#each openWindows as windowObject}
-        {#if !hiddenWindowIDs.some((id) => id === windowObject.id)}
-            <Window windowDetails={windowObject} closeFunction={closeWindow}>
-                {windowObject.content}
-            </Window>
+
+    {#each renderingWindows as entry }
+        {#if manager.isShown(entry)}
+            <WindowElement window={entry}>
+                {entry.content.render()}
+            </WindowElement>    
         {/if}
     {/each}
 
-
     <div class="taskbar">
-        {#each openWindows as openWindow }
+        {#each renderingWindows as entry }
             <div class="taskbar-item">
-                <img class="taskbar-icon" src="{openWindow.icon}" width="150px" height="150px">
-            </div>
-            <div class="taskbar-item">
-                <img class="taskbar-icon" src="{openWindow.icon}" width="150px" height="150px">
-            </div>
-            <div class="taskbar-item">
-                <img class="taskbar-icon" src="{openWindow.icon}" width="150px" height="150px">
+                <img class="taskbar-icon" src="{entry.icon}" width="150px" height="150px">
             </div>
         {/each}
     </div>
@@ -87,8 +76,9 @@
     }
 
     .taskbar .taskbar-icon {
-        height: var(--nav-item-height);
-        width: var(--nav-item-height);
+        height: 4rem;
+        width: 4rem;
+        box-sizing: border-box;
         border-radius: 15px;
     }
 
