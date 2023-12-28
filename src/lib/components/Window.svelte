@@ -1,7 +1,8 @@
 <script lang="ts">
     import WindowManager from "$lib/manager/WindowManager";
     import type Window from "$lib/util/Window";
-    import { cursor } from "../store";
+    import { fly } from "svelte/transition";
+    import { cursor } from "../../store";
     import { onMount } from "svelte";
 
     export let window: Window;
@@ -52,7 +53,7 @@
 
 </script>
 
-<div class="window" style="height: {height}px; width: {width}px; top: {y}px; left: {x}px; z-index: {windowIndex}" bind:this={windowObject}>
+<div class="window" style="height: {height}px; width: {width}px; top: {y}px; left: {x}px; z-index: {windowIndex}" bind:this={windowObject} transition:fly>
     <div class="window-header" on:mousedown={drag} on:mouseup={drop}>
         <div class="control-group">
             <div class="control control-close" bind:this={buttonClose} on:click={() => x=x}/>
