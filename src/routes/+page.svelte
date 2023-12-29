@@ -6,7 +6,6 @@
     import { BlankWindowContent, BrowserWindowContent, WindowContent } from "$lib/util/WindowContent";
     import manager, { windows } from "$lib/manager/WindowManager";
     import Dock from "$lib/components/Dock.svelte";
-    import Browser from "$lib/components/apps/Browser.svelte";
     import WindowManager from "$lib/manager/WindowManager";
 
     for (let i = 0; i < 2; i++) {

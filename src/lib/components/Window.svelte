@@ -7,6 +7,7 @@
     import Constants from "$lib/util/Constants";
     import type Vector from "$lib/util/Vector";
     import type { WindowContent } from "$lib/util/WindowContent";
+    import type { UIEventHandler } from "svelte/elements";
 
     export let window: Window;
     export let content: WindowContent | undefined = undefined;
@@ -19,7 +20,7 @@
     let windowLevel: number;
     $: windowIndex = windowLevel;
 
-    let windowObject;
+    let windowObject: HTMLDivElement;
     let buttonClose: HTMLDivElement;
     let buttonMaximize;
     let buttonMinimize;
@@ -45,14 +46,13 @@
         isMoving = true;
         moveLocation.x = x - e.clientX
         moveLocation.y = y - e.clientY
+        WindowManager.focusWindow(window.uuid)
     }
 
     function onDrop(e: MouseEvent) {
         e.stopPropagation()
         isMoving = false;
         updateGlobalPosition({ x: e.clientX, y: e.clientY })
-        WindowManager.focusWindow(window.uuid)
-        WindowManager.render()
     }
 
     function onClick(e: MouseEvent) {
@@ -60,8 +60,16 @@
         WindowManager.focusWindow(window.uuid)
     }
 
+    function onResize(e) {
+        window.size.x = e.target.clientWidth
+        window.size.y = e.target.clientHeight
+    }
+
     onMount(() => {
-        buttonClose.addEventListener('click', () => { WindowManager.close(window.uuid) })
+        buttonClose.addEventListener('click', () => {
+            WindowManager.close(window.uuid)
+            windowObject.parentNode?.removeChild(windowObject)
+        })
 
         content?.build(windowContentTarget)
 
@@ -84,7 +92,8 @@
 
 </script>
 
-<div class="window" style="--height: {height}px; --width: {width}px; --y: {y}px; --x: {x}px; --windowIndex: {windowIndex}" bind:this={windowObject} transition:fly on:mousedown={onClick} class:active={WindowManager.isActiveWindow(window.uuid)}>
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="window" style="--height: {height}px; --width: {width}px; --y: {y}px; --x: {x}px; --windowIndex: {windowIndex}" bind:this={windowObject} transition:fly on:mousedown={onClick} on:resize={onResize} class:active={WindowManager.isActiveWindow(window.uuid)} class:levitating={isMoving}>
     <div class="window-header" on:mousedown={onTake} on:mouseup={onDrop}>
         <div class="control-group">
             <div class="control control-close" bind:this={buttonClose}/>
@@ -113,13 +122,20 @@
         overflow: hidden;
         transition: background-color .1s ease-in-out, box-shadow .1s ease-in-out, transform .1s ease-in-out, backdop-filter .1s ease-in-out, border .1s ease-in-out;
         border: solid 1px rgba(0, 0, 0, .1);
+        resize: both;
+        min-width: 15rem;
+        min-height: 5rem;
+        padding: 1px;
 
         &:active {
             @extend .active;
             z-index: 101;
+        }
+
+        &.levitating {
             background-color: rgba(255, 255, 255, .2);
             box-shadow: 0 0 25px rgba(0, 0, 0, .15);
-            transform: scale(1.02);
+            // transform: scale(1.02);
             backdrop-filter: blur(25px);
             border: solid 1px rgba(0, 0, 0, .2);
         }
@@ -133,6 +149,8 @@
             flex-direction: row;
             align-items: center;
             user-select: none;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
 
             .control-group {
                 display: flex;
