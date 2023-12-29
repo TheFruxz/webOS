@@ -42,7 +42,7 @@
 
     .context-menu {
         z-index: 10000;
-        position: absolute;
+        position: fixed;
         top: var(--y);
         left: var(--x);
         width: 10rem;
