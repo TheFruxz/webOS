@@ -4,6 +4,8 @@ import type { SvelteComponent } from "svelte"
 
 export abstract class WindowContent {
 
+    abstract build(target: Element | Document | ShadowRoot): SvelteComponent
+
     isBlank(): boolean {
         return this instanceof BlankWindowContent
     }
@@ -12,7 +14,7 @@ export abstract class WindowContent {
         return this instanceof BrowserWindowContent
     }
 
-    public static blank(): BlankWindowContent {
+     public static blank(): BlankWindowContent {
         return new BlankWindowContent()
     }
 
@@ -22,12 +24,22 @@ export abstract class WindowContent {
 
 }
 
-export class BlankWindowContent extends WindowContent { }
+export class BlankWindowContent extends WindowContent {
+
+    override build(target: Element | Document | ShadowRoot): SvelteComponent {
+        return new Blank({ target: target })
+    }
+
+}
 
 export class BrowserWindowContent extends WindowContent {
     
         constructor(public url: string) {
             super()
+        }
+
+        override build(target: Element | Document | ShadowRoot): SvelteComponent {
+            return new Browser({ target: target, props: { url: this.url } })
         }
 
 }

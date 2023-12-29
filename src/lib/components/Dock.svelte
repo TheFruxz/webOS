@@ -45,6 +45,7 @@
         padding-left: 1rem;
         padding-right: 1rem;
         transition: all .2s ease-in-out;
+        z-index: 1000;
 
         .dock-item {
             height: var(--nav-item-height);
@@ -54,7 +55,16 @@
                 width: 4rem;
                 box-sizing: border-box;
                 border-radius: 22.37%;
+                transition: all 50ms ease-in-out;
             }
+
+            &:active {
+                .dock-icon {
+                    transform: scale(.9);
+                    filter: brightness(80%);
+                }
+            }
+
         }
 
     }

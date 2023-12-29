@@ -3,11 +3,13 @@
     import type Window from "$lib/util/Window";
     import { fly } from "svelte/transition";
     import { cursor } from "../../store";
-    import { onMount } from "svelte";
+    import { SvelteComponent, onMount } from "svelte";
     import Constants from "$lib/util/Constants";
     import type Vector from "$lib/util/Vector";
+    import type { WindowContent } from "$lib/util/WindowContent";
 
     export let window: Window;
+    export let content: WindowContent | undefined = undefined;
 
     $: width = window.size.x;
     $: height = window.size.y;
@@ -24,6 +26,8 @@
     
     let isMoving = false;
     let moveLocation = { x: 0, y: 0 };
+
+    let windowContentTarget: HTMLDivElement;
 
     function updateGlobalPosition(cursorPosition: Vector) {
         let localX = cursorPosition.x
@@ -59,6 +63,8 @@
     onMount(() => {
         buttonClose.addEventListener('click', () => { WindowManager.close(window.uuid) })
 
+        content?.build(windowContentTarget)
+
         cursor.subscribe((position) => {
             if(!isMoving) return
             
@@ -81,15 +87,13 @@
 <div class="window" style="--height: {height}px; --width: {width}px; --y: {y}px; --x: {x}px; --windowIndex: {windowIndex}" bind:this={windowObject} transition:fly on:mousedown={onClick} class:active={WindowManager.isActiveWindow(window.uuid)}>
     <div class="window-header" on:mousedown={onTake} on:mouseup={onDrop}>
         <div class="control-group">
-            <div class="control control-close" bind:this={buttonClose} on:click={() => x=x}/>
+            <div class="control control-close" bind:this={buttonClose}/>
             <div class="control control-minimize" bind:this={buttonMinimize}/>
             <div class="control control-maximize" bind:this={buttonMaximize}/>
         </div>
         <p class="window-title">{window.title}</p>
     </div>
-    <div class="window-content">
-        <slot />
-    </div>
+    <div class="window-content" bind:this={windowContentTarget} />
 </div>
 
 <style lang="scss">

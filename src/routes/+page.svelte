@@ -7,6 +7,7 @@
     import manager, { windows } from "$lib/manager/WindowManager";
     import Dock from "$lib/components/Dock.svelte";
     import Browser from "$lib/components/apps/Browser.svelte";
+    import WindowManager from "$lib/manager/WindowManager";
 
     for (let i = 0; i < 2; i++) {
         manager.open(
@@ -32,12 +33,21 @@
         })
     })
 
-    let renderingCandidates: Window[] = [];
+
+    $: renderingWindows = WindowManager.getVisisbleWindows();
     windows.subscribe((value) => {
-        renderingCandidates = value;
-        console.log(value)
+        renderingWindows = value;
     })
-    $: renderingWindows = renderingCandidates;
+    
+    let desktop: HTMLDivElement;
+
+    onMount(() => {
+        
+        renderingWindows.forEach((window) => {
+            new WindowElement({ target: desktop, props: { window: window, content: window.content } });
+        })
+
+    })
 
 </script>
 <h1 on:click={() => {
@@ -51,19 +61,15 @@
 }}>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
-<div class="desktop">
+<div class="desktop" bind:this={desktop}>
 
-    {#each renderingWindows as entry }
+    <!-- {#each renderingWindows as entry }
         {#if manager.isShown(entry.uuid)}
             <WindowElement window={entry}>
-                {#if entry.content instanceof BlankWindowContent}
-                    <div />
-                {:else if entry.content instanceof BrowserWindowContent}
-                    <Browser url={entry.content.url} />
-                {/if}
+                {entry.content.built}
             </WindowElement>    
         {/if}
-    {/each}
+    {/each} -->
     
     <Dock />
 
