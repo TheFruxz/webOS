@@ -42,6 +42,7 @@ const WindowManager = {
     open(window: Window): void {
         openWindows.push(window);
         this.windowOpener(window);
+        this.focusWindow(window.uuid);
         this.render();
     },
     close(windowUUID: string): void {

@@ -1,6 +1,6 @@
 <script lang="ts">
     import type Window from "$lib/util/Window";
-    import { windows } from "$lib/manager/WindowManager";
+    import WindowManager, { windows } from "$lib/manager/WindowManager";
 
     let _renderingWindows: Window[] = []
     $: renderingWindows = _renderingWindows;
@@ -9,13 +9,13 @@
     })
 
     // icon size + gap (only in between gap)
-    $: dockWidth = (renderingWindows.length * 4) + (renderingWindows.length - 1) * 1
+    $: dockWidth = (renderingWindows.length * (4 + .2)) + (renderingWindows.length - 1 * .5) * 1 // TODO animation currently disabled
 
 </script>
 
 <div class="dock" style="--width: {dockWidth}rem">
     {#each renderingWindows as entry }
-        <div class="dock-item">
+        <div class="dock-item" class:active={WindowManager.isActiveWindow(entry.uuid)} on:click={WindowManager.focusWindow(entry.uuid)}>
             <img class="dock-icon" src="{entry.icon}" alt="App-Icon from {entry.title}" draggable="false">
         </div>
     {/each}
@@ -31,7 +31,7 @@
         align-items: center;
         bottom: 0;
         left: 50%;
-        width: var(--width);
+        width: min-content;
         transform: translateX(-50%);
         height: var(--nav-height);
         overflow: hidden;
@@ -41,7 +41,7 @@
         min-width: 4rem;
         margin: 1rem;
         border-radius: 15px;
-        gap: 1rem;
+        gap: .5rem;
         padding-left: 1rem;
         padding-right: 1rem;
         transition: all .2s ease-in-out;
@@ -49,7 +49,17 @@
         user-select: none;
 
         .dock-item {
-            height: var(--nav-item-height);
+            height: calc(4rem + .4rem);
+            width: calc(4rem + .4rem);
+            padding: 0;
+            margin: 0;
+            border-radius: 25%;
+            border: solid 2px transparent;
+            transition: border .2s ease-in-out;
+
+            &.active {
+                border: solid 2px rgb(0, 136, 255);
+            }
 
             .dock-icon {
                 height: 4rem;
@@ -57,7 +67,8 @@
                 box-sizing: border-box;
                 border-radius: 22.37%;
                 transition: all 50ms ease-in-out;
-                background: linear-gradient(to right bottom, #fff, #d4d4d4);
+                background-color: white;
+                margin: .2rem;
             }
 
             &:active {
