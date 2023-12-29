@@ -85,11 +85,9 @@
             <div class="control control-minimize" bind:this={buttonMinimize}/>
             <div class="control control-maximize" bind:this={buttonMaximize}/>
         </div>
-        <p>{window.title}</p>
-        <p>Level: {windowLevel}</p>
+        <p class="window-title">{window.title}</p>
     </div>
     <div class="window-content">
-        <p>{JSON.stringify(window.position)}</p>
         <slot />
     </div>
 </div>
@@ -147,6 +145,10 @@
                     transition: all .1s ease-in-out;
                 }
 
+            }
+
+            .window-title {
+                font-weight: 500;
             }
 
         }

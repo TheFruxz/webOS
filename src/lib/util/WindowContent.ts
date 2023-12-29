@@ -1,18 +1,33 @@
+import Blank from "$lib/components/apps/Blank.svelte"
+import Browser from "$lib/components/apps/Browser.svelte"
+import type { SvelteComponent } from "svelte"
+
 export abstract class WindowContent {
 
-    abstract render(): string
+    isBlank(): boolean {
+        return this instanceof BlankWindowContent
+    }
+
+    isBrowser(): boolean {
+        return this instanceof BrowserWindowContent
+    }
 
     public static blank(): BlankWindowContent {
-        return BlankWindowContent.instance
+        return new BlankWindowContent()
+    }
+
+    public static browser(url: string): BrowserWindowContent {
+        return new BrowserWindowContent(url)
     }
 
 }
 
-class BlankWindowContent extends WindowContent {
-    
-    render(): string {
-        return ""
-    }
+export class BlankWindowContent extends WindowContent { }
 
-    static instance = new BlankWindowContent() 
+export class BrowserWindowContent extends WindowContent {
+    
+        constructor(public url: string) {
+            super()
+        }
+
 }
