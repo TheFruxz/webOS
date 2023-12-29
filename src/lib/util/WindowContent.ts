@@ -2,6 +2,8 @@ import Blank from "$lib/components/apps/Blank.svelte"
 import Browser from "$lib/components/apps/Browser.svelte"
 import type { SvelteComponent } from "svelte"
 import type { ContextMenuEntry } from "./ContextMenu"
+import WindowManager from "$lib/manager/WindowManager"
+import Window from "./Window"
 
 export interface NavbarEntry {
     title: string
@@ -51,7 +53,14 @@ export class BrowserWindowContent extends WindowContent {
             entries: [
                 {
                     title: "New Window",
-                    action: () => {}
+                    action: () => {
+                        WindowManager.open(
+                            new Window(
+                                WindowContent.browser("https://microsoft.com"),
+                                "Internet Explorer",
+                            )
+                        )
+                    }
                 }
             ]
         }
