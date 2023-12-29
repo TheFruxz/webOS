@@ -2,11 +2,11 @@
     import type Window from "$lib/util/Window";
     import { windows } from "$lib/manager/WindowManager";
 
-    let candidates: Window[] = [];
+    let _renderingWindows: Window[] = []
+    $: renderingWindows = _renderingWindows;
     windows.subscribe((value) => {
-        candidates = value;
+        _renderingWindows = value.toSorted((a, b) => a.order - b.order);
     })
-    $: renderingWindows = candidates;
 
     // icon size + gap (only in between gap)
     $: dockWidth = (renderingWindows.length * 4) + (renderingWindows.length - 1) * 1
@@ -16,7 +16,7 @@
 <div class="dock" style="--width: {dockWidth}rem">
     {#each renderingWindows as entry }
         <div class="dock-item">
-            <img class="dock-icon" src="{entry.icon}" alt="App-Icon from {entry.title}">
+            <img class="dock-icon" src="{entry.icon}" alt="App-Icon from {entry.title}" draggable="false">
         </div>
     {/each}
 </div>
@@ -46,6 +46,7 @@
         padding-right: 1rem;
         transition: all .2s ease-in-out;
         z-index: 1000;
+        user-select: none;
 
         .dock-item {
             height: var(--nav-item-height);
@@ -56,6 +57,7 @@
                 box-sizing: border-box;
                 border-radius: 22.37%;
                 transition: all 50ms ease-in-out;
+                background: linear-gradient(to right bottom, #fff, #d4d4d4);
             }
 
             &:active {

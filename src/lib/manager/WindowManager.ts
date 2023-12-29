@@ -5,13 +5,21 @@ let openWindows: Window[] = [];
 let hiddenWindowIDs: string[] = []; // UUIDs of the windows
 
 export const windows = writable(openWindows);
-export const order = writable(0);
+export const order = writable(0); // TODO rename, to be more expressive
+export const globalDesktop = writable<HTMLDivElement>();
+export const windowOrder = writable(0)
 
 const WindowManager = {
     openWindows,
     hiddenWindowIDs,
+    windowOpener: (window: Window) => {},
     render(): void {
         windows.set(openWindows);
+    },
+    getNextWindowOrderNumber(): number {
+        let x = openWindows.length;
+        windowOrder.set(x + 1);
+        return x;
     },
     getVisisbleWindows(): Window[] {
         return openWindows.filter((window) => hiddenWindowIDs.indexOf(window.uuid) === -1);
@@ -33,6 +41,7 @@ const WindowManager = {
     },
     open(window: Window): void {
         openWindows.push(window);
+        this.windowOpener(window);
         this.render();
     },
     close(windowUUID: string): void {

@@ -3,8 +3,8 @@
     import WindowElement from "../lib/components/Window.svelte";
     import Window from "$lib/util/Window";
     import { cursor } from "../store";
-    import { BlankWindowContent, BrowserWindowContent, WindowContent } from "$lib/util/WindowContent";
-    import manager, { windows } from "$lib/manager/WindowManager";
+    import { WindowContent } from "$lib/util/WindowContent";
+    import manager, { globalDesktop, windows } from "$lib/manager/WindowManager";
     import Dock from "$lib/components/Dock.svelte";
     import WindowManager from "$lib/manager/WindowManager";
 
@@ -22,7 +22,6 @@
         new Window(
             WindowContent.browser("https://abc.xyz"),
             "My Homepage",
-            "https://llllllll.co/uploads/default/original/3X/c/8/c8e62a92b66c348e0cf6fcce04ff9b03f6b37bb8.png",
         )
     )
 
@@ -42,9 +41,11 @@
 
     onMount(() => {
         
-        renderingWindows.forEach((window) => {
+        manager.windowOpener = (window: Window) => {
             new WindowElement({ target: desktop, props: { window: window, content: window.content } });
-        })
+        }
+
+        renderingWindows.forEach(manager.windowOpener);
 
     })
 
@@ -61,14 +62,6 @@
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 
 <div class="desktop" bind:this={desktop}>
-
-    <!-- {#each renderingWindows as entry }
-        {#if manager.isShown(entry.uuid)}
-            <WindowElement window={entry}>
-                {entry.content.built}
-            </WindowElement>    
-        {/if}
-    {/each} -->
     
     <Dock />
 
@@ -79,7 +72,5 @@
     .desktop {
         user-select: none;
     }
-
-    
 
 </style>
