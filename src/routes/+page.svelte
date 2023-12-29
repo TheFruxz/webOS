@@ -7,6 +7,7 @@
     import manager, { globalDesktop, windows } from "$lib/manager/WindowManager";
     import Dock from "$lib/components/Dock.svelte";
     import WindowManager from "$lib/manager/WindowManager";
+    import NavBar from "$lib/components/NavBar.svelte";
 
     for (let i = 0; i < 2; i++) {
         manager.open(
@@ -62,14 +63,16 @@
 
 <div class="desktop" bind:this={desktop}>
     
+    <NavBar />
     <Dock />
 
 </div>
 
 <style>
 
-    .desktop {
+    :global(body) {
         user-select: none;
+        padding-top: 3rem;
     }
 
 </style>

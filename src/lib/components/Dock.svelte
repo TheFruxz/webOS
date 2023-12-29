@@ -13,14 +13,16 @@
     $: dockWidth = (renderingWindows.length * (4 + .2)) + (renderingWindows.length - 1 * .5) * 1 // TODO animation currently disabled
 
     function openContext(e: MouseEvent, window: Window) {
-        openContextMenu(e, [
+        let base = [
             {
                 title: "Quit",
                 action: () => {
                     WindowManager.close(window.uuid)
                 }
             }
-        ])
+        ]
+
+        openContextMenu(e, base.concat(window.content.contextMenu))
     }
 
 </script>
