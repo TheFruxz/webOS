@@ -13,7 +13,6 @@
             new Window(
                 WindowContent.blank(),
                 "Hello World " + i,
-                "https://llllllll.co/uploads/default/original/3X/c/8/c8e62a92b66c348e0cf6fcce04ff9b03f6b37bb8.png",
             )
         )
     }
@@ -55,7 +54,7 @@
             new Window(
                 WindowContent.blank(),
                 "Hello World",
-                "https://llllllll.co/uploads/default/original/3X/c/8/c8e62a92b66c348e0cf6fcce04ff9b03f6b37bb8.png",
+                "https://thispersondoesnotexist.com/"
             )
         )
 }}>Welcome to SvelteKit</h1>

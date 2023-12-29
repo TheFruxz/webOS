@@ -4,6 +4,8 @@ import type { WindowContent } from "./WindowContent";
 
 export default class Window {
 
+    public htmlElement: HTMLDivElement | undefined = undefined;
+
     constructor(
         public content: WindowContent,
         public title: string,

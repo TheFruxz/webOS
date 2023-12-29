@@ -1,6 +1,7 @@
 <script lang="ts">
     import type Window from "$lib/util/Window";
     import WindowManager, { windows } from "$lib/manager/WindowManager";
+    import { openContextMenu } from "$lib/util/ContextMenu";
 
     let _renderingWindows: Window[] = []
     $: renderingWindows = _renderingWindows;
@@ -11,11 +12,24 @@
     // icon size + gap (only in between gap)
     $: dockWidth = (renderingWindows.length * (4 + .2)) + (renderingWindows.length - 1 * .5) * 1 // TODO animation currently disabled
 
+    function openContext(e: MouseEvent, window: Window) {
+        openContextMenu(e, [
+            {
+                title: "Quit",
+                action: () => {
+                    WindowManager.close(window.uuid)
+                }
+            }
+        ])
+    }
+
 </script>
 
 <div class="dock" style="--width: {dockWidth}rem">
     {#each renderingWindows as entry }
-        <div class="dock-item" class:active={WindowManager.isActiveWindow(entry.uuid)} on:click={WindowManager.focusWindow(entry.uuid)}>
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <div class="dock-item" class:active={WindowManager.isActiveWindow(entry.uuid)} on:click={() => {WindowManager.focusWindow(entry.uuid)}} on:contextmenu|preventDefault={(e) => { openContext(e, entry) }}>
             <img class="dock-icon" src="{entry.icon}" alt="App-Icon from {entry.title}" draggable="false">
         </div>
     {/each}

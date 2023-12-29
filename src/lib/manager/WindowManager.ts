@@ -46,8 +46,18 @@ const WindowManager = {
         this.render();
     },
     close(windowUUID: string): void {
-        openWindows = openWindows.filter((w) => w.uuid !== windowUUID);
-        this.render();
+        let window = this.getWindow(windowUUID);
+
+        if (window) {
+            let htmlElement: HTMLDivElement | undefined = window.htmlElement;
+            if (htmlElement) {
+                htmlElement.parentNode?.removeChild(htmlElement)
+            }
+
+            openWindows = openWindows.filter((w) => w.uuid !== windowUUID);
+            this.render();
+
+        }
     },
     hide(windowUUID: string): void {
         hiddenWindowIDs.push(windowUUID);

@@ -1,13 +1,12 @@
 <script lang="ts">
-    import WindowManager, { order } from "$lib/manager/WindowManager";
+    import WindowManager, { order, windows } from "$lib/manager/WindowManager";
     import type Window from "$lib/util/Window";
     import { fly } from "svelte/transition";
     import { cursor } from "../../store";
-    import { SvelteComponent, onMount } from "svelte";
+    import { onMount } from "svelte";
     import Constants from "$lib/util/Constants";
     import type Vector from "$lib/util/Vector";
     import type { WindowContent } from "$lib/util/WindowContent";
-    import type { UIEventHandler } from "svelte/elements";
 
     export let window: Window;
     export let content: WindowContent | undefined = undefined;
@@ -29,6 +28,15 @@
     let moveLocation = { x: 0, y: 0 };
 
     let windowContentTarget: HTMLDivElement;
+
+    let _isActive = false;
+    $: isActive = _isActive;
+
+    windows.subscribe((value) => {
+        setTimeout(() => {
+            _isActive = value[0].uuid === window.uuid
+        }, 0)
+    })
 
     function updateGlobalPosition(cursorPosition: Vector) {
         let localX = cursorPosition.x
@@ -68,7 +76,6 @@
     onMount(() => {
         buttonClose.addEventListener('click', () => {
             WindowManager.close(window.uuid)
-            windowObject.parentNode?.removeChild(windowObject)
         })
 
         content?.build(windowContentTarget)
@@ -88,17 +95,25 @@
             }, 0)
         })
 
+        window.htmlElement = windowObject
+
     })
 
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="window" style="--height: {height}px; --width: {width}px; --y: {y}px; --x: {x}px; --windowIndex: {windowIndex}" bind:this={windowObject} transition:fly on:mousedown={onClick} on:resize={onResize} class:active={WindowManager.isActiveWindow(window.uuid)} class:levitating={isMoving}>
+<div class="window" style="--height: {height}px; --width: {width}px; --y: {y}px; --x: {x}px; --windowIndex: {windowIndex}" bind:this={windowObject} transition:fly on:mousedown={onClick} on:resize={onResize} class:active={isActive} class:levitating={isMoving}>
     <div class="window-header" on:mousedown={onTake} on:mouseup={onDrop}>
         <div class="control-group">
-            <div class="control control-close" bind:this={buttonClose}/>
-            <div class="control control-minimize" bind:this={buttonMinimize}/>
-            <div class="control control-maximize" bind:this={buttonMaximize}/>
+            <div class="control material-symbols-outlined control-close" bind:this={buttonClose}>
+                <i class="control-symbol material-symbols-outlined">close</i>
+            </div>
+            <div class="control material-symbols-outlined control-minimize" bind:this={buttonMinimize}>
+                <i class="control-symbol material-symbols-outlined">minimize</i>
+            </div>
+            <div class="control material-symbols-outlined control-maximize" bind:this={buttonMaximize}>
+                <i class="control-symbol material-symbols-outlined">open_in_full</i>
+            </div>
         </div>
         <p class="window-title">{window.title}</p>
     </div>
@@ -160,11 +175,34 @@
 
                 .control {
                     width: 15px;
+                    height: 15px;
+                    box-sizing: border-box;
                     aspect-ratio: 1/1;
                     gap: 1rem;
                     border-radius: 5px;
                     background-color: gray;
                     transition: all .1s ease-in-out;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border: solid 1px rgba(#000, 0);
+
+                    &:active {
+                            filter: brightness(120%);
+                    }
+
+                    .control-symbol {
+                        transition: all .1s ease-in-out;
+                        user-select: none;
+                        text-align: center;
+                        font-size: .8rem;
+                        padding: 0;
+                        margin: 0;
+                        color: #222;
+                        opacity: 0;
+
+                    }
+
                 }
 
             }
@@ -177,6 +215,8 @@
         
         &.active, .control-group:hover {
             .control {
+                border: solid 1px rgba(#000, .1);
+
                 &.control-close {
                     background-color: #FF5F56;
                 }
@@ -187,6 +227,9 @@
 
                 &.control-maximize {
                     background-color: #28C840;
+                }
+                .control-symbol {
+                    opacity: 1;
                 }
             }
         }
