@@ -20,7 +20,7 @@
 
     manager.open(
         new Window(
-            WindowContent.browser("https://abc.xyz"),
+            WindowContent.browser("https://collection-software.com"),
             "My Homepage",
         )
     )
