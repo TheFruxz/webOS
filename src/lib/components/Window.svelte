@@ -55,22 +55,27 @@
         moveLocation.x = x - e.clientX
         moveLocation.y = y - e.clientY
         WindowManager.focusWindow(window.uuid)
+        windowContentTarget.style.pointerEvents = "none"
     }
 
     function onDrop(e: MouseEvent) {
         e.stopPropagation()
         isMoving = false;
         updateGlobalPosition({ x: e.clientX, y: e.clientY })
+        windowContentTarget.style.pointerEvents = "all"
     }
 
     function onClick(e: MouseEvent) {
         console.log("focus window...")
         WindowManager.focusWindow(window.uuid)
+        windowContentTarget.style.pointerEvents = "all"
     }
 
     function onResize(e) {
         window.size.x = e.target.clientWidth
         window.size.y = e.target.clientHeight
+        windowContentTarget.style.pointerEvents = "none"
+
     }
 
     onMount(() => {
