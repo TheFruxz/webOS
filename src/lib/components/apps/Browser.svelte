@@ -1,9 +1,25 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
     export let url: string = "https://google.com"
+
+    let HTML_SOURCE: string = "";
+
+    let updateSource:any;
+
+    import HtmlRender from "../HTMLRender.svelte";
+
+
+    onMount(async () => {
+        
+        updateSource(url);
+    })
+
 </script>
 
 <div class="browser">
-    <iframe title="Browser app for {url}" src="{url}" frameborder="0" />
+    <!-- <iframe bind:this={iframe} title="Browser app for {url}" src="{url}" frameborder="0" /> -->
+    <HtmlRender url={url} bind:updateURL={updateSource}/>
 </div>
 
 <style lang="scss">
@@ -11,12 +27,6 @@
     .browser {
         width: 100%;
         height: 100%;
-
-        iframe {
-            width: 100%;
-            height: 100%;
-        }
-
     }
 
 </style>
