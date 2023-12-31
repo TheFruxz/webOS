@@ -21,13 +21,9 @@
         
 
         parsedstyles.forEach((style) => {
-            console.log("---- style ----")
-            console.log(style);
             let styleTag = document.createElement("style");
             styleTag.innerHTML = style;
             parsed.head.appendChild(styleTag);
-            console.log("---- style ----")
-            console.log(style);
         })
 
         let imagerObjects = parsed.querySelectorAll("img");
@@ -59,7 +55,6 @@
 
     export async function updateURL(newUrl: string) {
         url = newUrl;
-        console.log("updateURL")
         const response = await fetch(url).catch((error) => {
             source = `
             <head>
@@ -116,10 +111,7 @@
             renderHTML();
             return error;
         });
-        console.log("response")
-        console.log(response)
         if(!response.ok) {
-            console.log("error")
             let error = await response.text();
             source = `
             <head>
@@ -229,16 +221,11 @@
             let urlObject = new URL(url);
             let styleURL = new URL(style);
             if(styleURL.hostname === window.location.hostname) style =  urlObject.origin + styleURL.pathname;
-            console.log(style);
-
             let parsedStyle: string = await fetch(style).then((response) => {
                 return response.text();
             })
-            console.log(parsedStyle);
             await parsedStyles.push(await parsedStyle);
         }
-        console.log("---- parsedStyles ----")
-        console.log(parsedStyles[0])
         return await parsedStyles; 
     }
 
@@ -249,12 +236,8 @@
             let urlObject = new URL(url);
             let imageURL = new URL(image.source);
             if(imageURL.hostname === window.location.hostname) image.source =  urlObject.origin + imageURL.pathname;
-            console.log(image);
-
             await parsedImages.push(image);
         }
-        console.log("---- parsedImages ----")
-        console.log(parsedImages)
         return await parsedImages; 
     }
 
