@@ -59,7 +59,123 @@
 
     export async function updateURL(newUrl: string) {
         url = newUrl;
-        const response = await fetch(url)
+        console.log("updateURL")
+        const response = await fetch(url).catch((error) => {
+            source = `
+            <head>
+
+                <title>Error</title>
+
+                </head>
+
+                <body>
+
+                <img src="https://static.thenounproject.com/png/482405-200.png" alt="An error occured">
+                <h1>Error!</h1>
+                <p>An error occured while loading this page.</p>
+
+                <p class="error">${error}</p>
+
+                <button>Reload</button>
+                </body>
+
+
+                <style>
+                body{
+                    width: 80%;
+                    margin: 0 auto;
+                    font-family: sans-serif;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+
+                img{
+                    width: 100px;
+                    height: 100px;
+                    display: block;
+                }
+
+                button{
+                    padding: 10px 20px;
+                    border: none;
+                    background: #000;
+                    color: #fff;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-top: 20px;
+                    width: max-content;
+                }
+
+                .error{
+                    color:gray;
+                }
+                </style>
+            `
+            renderHTML();
+            return error;
+        });
+        console.log("response")
+        console.log(response)
+        if(!response.ok) {
+            console.log("error")
+            let error = await response.text();
+            source = `
+            <head>
+
+                <title>Error</title>
+
+                </head>
+
+                <body>
+
+                <img src="https://static.thenounproject.com/png/482405-200.png" alt="An error occured">
+                <h1>Error!</h1>
+                <p>An error occured while loading this page.</p>
+
+                <p class="error">${error}</p>
+
+                <button>Reload</button>
+                </body>
+
+
+                <style>
+                body{
+                    width: 80%;
+                    margin: 0 auto;
+                    font-family: sans-serif;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+
+                img{
+                    width: 100px;
+                    height: 100px;
+                    display: block;
+                }
+
+                button{
+                    padding: 10px 20px;
+                    border: none;
+                    background: #000;
+                    color: #fff;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin-top: 20px;
+                    width: max-content;
+                }
+
+                .error{
+                    color:gray;
+                }
+                </style>
+            `
+            renderHTML();
+            return;
+        }
         source = await response.text()
         renderHTML();
     }
