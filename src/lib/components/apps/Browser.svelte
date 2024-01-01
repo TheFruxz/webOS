@@ -1,17 +1,12 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-
-    export let url: string = "https://google.com"
-
-    let HTML_SOURCE: string = "";
-
-    let updateSource:any;
-
     import HtmlRender from "../HTMLRender.svelte";
+    import { onMount } from "svelte";
 
+    export let url: string;
+
+    let updateSource: any;
 
     onMount(async () => {
-        
         updateSource(url);
     })
 

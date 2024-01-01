@@ -1,5 +1,5 @@
 <script lang="ts">
-    import WindowManager, { order, windows } from "$lib/manager/WindowManager";
+    import WindowManager from "$lib/manager/WindowManager";
     import type Window from "$lib/util/Window";
     import { fly } from "svelte/transition";
     import { cursor } from "../../store";
@@ -32,7 +32,7 @@
     let _isActive = false;
     $: isActive = _isActive;
 
-    windows.subscribe((value) => {
+    WindowManager.windows.subscribe((value) => {
         setTimeout(() => {
             _isActive = value[0].uuid === window.uuid
         }, 0)
@@ -91,7 +91,7 @@
             updateGlobalPosition(position)
         })
 
-        order.subscribe(() => {
+        WindowManager.order.subscribe(() => {
             // delayed update for bugging reasons
             setTimeout(() => {
                 console.log("window uuid: " + window.uuid + " level " + windowLevel)

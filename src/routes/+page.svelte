@@ -4,7 +4,7 @@
     import Window from "$lib/util/Window";
     import { cursor } from "../store";
     import { WindowContent } from "$lib/util/WindowContent";
-    import manager, { globalDesktop, windows } from "$lib/manager/WindowManager";
+    import manager from "$lib/manager/WindowManager";
     import Dock from "$lib/components/Dock.svelte";
     import WindowManager from "$lib/manager/WindowManager";
     import NavBar from "$lib/components/NavBar.svelte";
@@ -33,7 +33,7 @@
 
 
     $: renderingWindows = WindowManager.getVisisbleWindows();
-    windows.subscribe((value) => {
+    WindowManager.windows.subscribe((value) => {
         renderingWindows = value;
     })
     

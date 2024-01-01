@@ -1,11 +1,11 @@
 <script lang="ts">
     import type Window from "$lib/util/Window";
-    import WindowManager, { windows } from "$lib/manager/WindowManager";
+    import WindowManager from "$lib/manager/WindowManager";
     import { openContextMenu } from "$lib/util/ContextMenu";
 
     let _renderingWindows: Window[] = []
     $: renderingWindows = _renderingWindows;
-    windows.subscribe((value) => {
+    WindowManager.windows.subscribe((value) => {
         _renderingWindows = value.toSorted((a, b) => a.order - b.order);
     })
 

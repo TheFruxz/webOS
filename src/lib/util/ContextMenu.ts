@@ -1,5 +1,4 @@
 import ContextMenu from "$lib/components/ContextMenu.svelte";
-import WindowManager, { globalDesktop } from "$lib/manager/WindowManager";
 import type Vector from "./Vector";
 
 export class ContextMenuEntry {

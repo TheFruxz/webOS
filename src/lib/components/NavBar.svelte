@@ -1,31 +1,30 @@
 <script lang="ts">
-    import { windows } from "$lib/manager/WindowManager";
+    import WindowManager from "$lib/manager/WindowManager";
     import { openContextMenu } from "$lib/util/ContextMenu";
     import type Window from "$lib/util/Window";
     import type { NavbarEntry } from "$lib/util/WindowContent";
 
+    let _currentApp: Window | undefined = undefined;
+    $: currentApp = _currentApp;
+    $: navbar = _currentApp?.content?.navbarMenu || [];
 
-let _currentApp: Window | undefined = undefined;
-$: currentApp = _currentApp;
-$: navbar = _currentApp?.content?.navbarMenu || [];
+    WindowManager.windows.subscribe((value) => {
+        setTimeout(() => {
+            _currentApp = value[0]
+        }, 0)
+    })
 
-windows.subscribe((value) => {
-    setTimeout(() => {
-        _currentApp = value[0]
-    }, 0)
-})
+    function openContext(e: MouseEvent, entry: NavbarEntry) {
+        let clicked = e.target as HTMLElement;
+        let x = clicked.offsetLeft;
+        let y = clicked.offsetTop + (clicked.offsetHeight * 1.5);
 
-function openContext(e: MouseEvent, entry: NavbarEntry) {
-    let clicked = e.target as HTMLElement;
-    let x = clicked.offsetLeft;
-    let y = clicked.offsetTop + (clicked.offsetHeight * 1.5);
+        console.log(x, y)
 
-    console.log(x, y)
-
-    setTimeout(() => {
-        openContextMenu({x, y}, entry.entries)
-    }, 0)
-}
+        setTimeout(() => {
+            openContextMenu({x, y}, entry.entries)
+        }, 0)
+    }
 
 </script>
 
