@@ -52,6 +52,7 @@
         border: solid 1px rgba(0, 0, 0, .2);
         padding: .5rem;
         border-radius: 5px;
+        font-size: .9rem;
         opacity: 1;
 
         animation-name: appear;

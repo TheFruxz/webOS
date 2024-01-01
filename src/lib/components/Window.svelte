@@ -193,7 +193,7 @@
                     border: solid 1px rgba(#000, 0);
 
                     &:active {
-                            filter: brightness(120%);
+                        filter: brightness(120%);
                     }
 
                     .control-symbol {
