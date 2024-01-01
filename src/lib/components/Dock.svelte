@@ -2,12 +2,15 @@
     import type Window from "$lib/util/Window";
     import WindowManager from "$lib/manager/WindowManager";
     import { openContextMenu } from "$lib/util/ContextMenu";
+    import { onMount } from "svelte";
 
     let _renderingWindows: Window[] = []
     $: renderingWindows = _renderingWindows;
     WindowManager.windows.subscribe((value) => {
         _renderingWindows = value.toSorted((a, b) => a.order - b.order);
     })
+
+    let dock: HTMLDivElement;
 
     // icon size + gap (only in between gap)
     $: dockWidth = (renderingWindows.length * (4 + .2)) + (renderingWindows.length - 1 * .5) * 1 // TODO animation currently disabled
@@ -25,9 +28,13 @@
         openContextMenu(e, base.concat(window.content.contextMenu))
     }
 
+    onMount(() => {
+        WindowManager.dock = dock;
+    })
+
 </script>
 
-<div class="dock" style="--width: {dockWidth}rem">
+<div class="dock" style="--width: {dockWidth}rem" bind:this={dock}>
     {#each renderingWindows as entry }
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <!-- svelte-ignore a11y-click-events-have-key-events -->

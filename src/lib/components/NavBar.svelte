@@ -3,10 +3,13 @@
     import { openContextMenu } from "$lib/util/ContextMenu";
     import type Window from "$lib/util/Window";
     import type { NavbarEntry } from "$lib/util/WindowContent";
+    import { onMount } from "svelte";
 
     let _currentApp: Window | undefined = undefined;
     $: currentApp = _currentApp;
-    $: navbar = _currentApp?.content?.navbarMenu || [];
+    $: navbarContent = _currentApp?.content?.navbarMenu || [];
+
+    let navbar: HTMLDivElement;
 
     WindowManager.windows.subscribe((value) => {
         setTimeout(() => {
@@ -26,9 +29,13 @@
         }, 0)
     }
 
+    onMount(() => {
+        WindowManager.navbar = navbar;
+    })
+
 </script>
 
-<div class="nav-bar">
+<div class="nav-bar" bind:this={navbar}>
     <div class="brand nav-item">
         <img src="/logo.svg" alt="Logo" draggable="false">
     </div>
@@ -36,7 +43,7 @@
         <p class="nav-item">{currentApp?.title || "webOS"}</p>
     </div>
     <div class="actions">
-        {#each navbar as entry}
+        {#each navbarContent as entry}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div class="nav-item" on:click={(e) => { openContext(e, entry)}}>{entry.title}</div>
@@ -60,6 +67,7 @@
         flex-direction: row;
         padding-left: 1rem;
         gap: .1rem;
+        z-index: 10000;
 
         .brand {
             height: 60%;

@@ -7,6 +7,7 @@
 }
 
 body {
+    overflow: hidden;
     font-family: 'Be Vietnam Pro', sans-serif;
     background-position: center;
     background-size: cover;

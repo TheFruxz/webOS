@@ -41,8 +41,10 @@
 
     onMount(() => {
         
+        manager.desktop = desktop;
+
         manager.windowOpener = (window: Window) => {
-            new WindowElement({ target: desktop, props: { window: window, content: window.content } });
+            new WindowElement({ target: desktop, props: { windowData: window, content: window.content } });
         }
 
         renderingWindows.forEach(manager.windowOpener);

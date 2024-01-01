@@ -7,14 +7,15 @@
     import Constants from "$lib/util/Constants";
     import type Vector from "$lib/util/Vector";
     import type { WindowContent } from "$lib/util/WindowContent";
+    import NumberRange, { NumberOverflowBehavior } from "$lib/util/NumberRange";
 
-    export let window: Window;
+    export let windowData: Window;
     export let content: WindowContent | undefined = undefined;
 
-    $: width = window.size.x;
-    $: height = window.size.y;
-    $: x = window.position.x;
-    $: y = window.position.y;
+    $: width = windowData.size.x;
+    $: height = windowData.size.y;
+    $: x = windowData.position.x;
+    $: y = windowData.position.y;
 
     let windowLevel: number;
     $: windowIndex = windowLevel;
@@ -34,9 +35,21 @@
 
     WindowManager.windows.subscribe((value) => {
         setTimeout(() => {
-            _isActive = value[0].uuid === window.uuid
+            _isActive = value[0].uuid === windowData.uuid
         }, 0)
     })
+
+    function computeYCordinates(): NumberRange {
+        return new NumberRange(WindowManager.navbar.clientHeight, window.innerHeight - height)
+    }
+
+    function computeXCordinates(): NumberRange {
+        return new NumberRange(0, window.innerWidth - width)
+    }
+
+    function computeCordinates(vector: Vector): Vector {
+        return { x: computeXCordinates().get(vector.x, NumberOverflowBehavior.CLAMP), y: computeYCordinates().get(vector.y, NumberOverflowBehavior.CLAMP) }
+    }
 
     function updateGlobalPosition(cursorPosition: Vector) {
         let localX = cursorPosition.x
@@ -45,8 +58,8 @@
         localX += moveLocation.x
         localY += moveLocation.y
 
-        window.position.x = localX
-        window.position.y = localY
+        windowData.position.x = localX
+        windowData.position.y = localY
     }
 
     function onTake(e: MouseEvent) {
@@ -54,7 +67,7 @@
         isMoving = true;
         moveLocation.x = x - e.clientX
         moveLocation.y = y - e.clientY
-        WindowManager.focusWindow(window.uuid)
+        WindowManager.focusWindow(windowData.uuid)
         windowContentTarget.style.pointerEvents = "none"
     }
 
@@ -67,20 +80,22 @@
 
     function onClick(e: MouseEvent) {
         console.log("focus window...")
-        WindowManager.focusWindow(window.uuid)
+        WindowManager.focusWindow(windowData.uuid)
         windowContentTarget.style.pointerEvents = "all"
     }
 
     function onResize(e) {
-        window.size.x = e.target.clientWidth
-        window.size.y = e.target.clientHeight
+        windowData.size.x = e.target.clientWidth
+        windowData.size.y = e.target.clientHeight
+        width = e.target.clientWidth
+        height = e.target.clientHeight
         windowContentTarget.style.pointerEvents = "none"
-
+        console.log("resize window... " + e.target.clientWidth + "x" + e.target.clientHeight)
     }
 
     onMount(() => {
         buttonClose.addEventListener('click', () => {
-            WindowManager.close(window.uuid)
+            WindowManager.close(windowData.uuid)
         })
 
         content?.build(windowContentTarget)
@@ -94,20 +109,18 @@
         WindowManager.order.subscribe(() => {
             // delayed update for bugging reasons
             setTimeout(() => {
-                console.log("window uuid: " + window.uuid + " level " + windowLevel)
-                windowLevel = Constants.MAX_WINDOW_AMOUNT -  WindowManager.getWindowIndex(window.uuid)
-                console.log("updated level: " + windowLevel)
+                windowLevel = Constants.MAX_WINDOW_AMOUNT -  WindowManager.getWindowIndex(windowData.uuid)
             }, 0)
         })
 
-        window.htmlElement = windowObject
+        windowData.htmlElement = windowObject
 
     })
 
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="window" style="--height: {height}px; --width: {width}px; --y: {y}px; --x: {x}px; --windowIndex: {windowIndex}" bind:this={windowObject} transition:fly on:mousedown={onClick} on:resize={onResize} class:active={isActive} class:levitating={isMoving}>
+<div class="window" style="--height: {height}px; --width: {width}px; --y: {computeYCordinates().get(y, NumberOverflowBehavior.CLAMP)}px; --x: {computeXCordinates().get(x, NumberOverflowBehavior.CLAMP)}px; --windowIndex: {windowIndex}" bind:this={windowObject} transition:fly on:mousedown={onClick} on:resize={onResize} class:active={isActive} class:levitating={isMoving}>
     <div class="window-header" on:mousedown={onTake} on:mouseup={onDrop}>
         <div class="control-group">
             <div class="control material-symbols-outlined control-close" bind:this={buttonClose}>
@@ -120,7 +133,7 @@
                 <i class="control-symbol material-symbols-outlined">open_in_full</i>
             </div>
         </div>
-        <p class="window-title">{window.title}</p>
+        <p class="window-title">{windowData.title}</p>
     </div>
     <div class="window-content" bind:this={windowContentTarget} />
 </div>

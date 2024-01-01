@@ -8,8 +8,12 @@ export default class WindowManager {
 
     static windows = writable(this.openWindows);
     static order = writable(0); // TODO rename, to be more expressive
-    static globalDesktop = writable<HTMLDivElement>();
     static windowOrder = writable(0)
+
+    // SystemUI
+    static desktop: HTMLDivElement;
+    static dock: HTMLDivElement;
+    static navbar: HTMLDivElement;
 
     static windowOpener: (window: Window) => void = (window: Window) => {};
 
